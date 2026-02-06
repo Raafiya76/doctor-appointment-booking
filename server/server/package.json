@@ -1,0 +1,29 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Doctor Appointment App",
+  "main": "server.js",
+  "engines": {
+    "node": "18.14.2",
+    "npm": "9.5.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "build": "npm install --legacy-peer-deps && cd ../client && npm install --legacy-peer-deps && npm run build"
+  },
+  "author": "Salman Muazam",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "moment": "^2.29.4",
+    "mongoose": "^8.0.0",
+    "morgan": "^1.10.0",
+    "validator": "^13.11.0"
+  }
+}
