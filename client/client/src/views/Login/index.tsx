@@ -66,7 +66,14 @@ const Login = () => {
       if (user?.data?.status) {
         dispatch(setUser(user?.data));
         localStorage.setItem("user", JSON.stringify(user?.data));
-        navigate("/");
+
+        // Redirect based on user role
+        const isAdmin = user?.data?.data?.user?.isAdmin;
+        if (isAdmin) {
+          navigate("/admin");
+        } else {
+          navigate("/user-home");
+        }
       }
       if (user?.error) {
         setToast({
@@ -156,19 +163,27 @@ const Login = () => {
                   flexDirection: "column",
                 }}
               >
-                <Typography sx={{ fontSize: "26px", color: "black", fontWeight: "bold" , fontFamily:"robolics"}} component="h1">
+                <Typography
+                  sx={{
+                    fontSize: "26px",
+                    color: "black",
+                    fontWeight: "bold",
+                    fontFamily: "robolics",
+                  }}
+                  component="h1"
+                >
                   WELCOME TO BOOK A DOCTOR
                 </Typography>
                 <Typography
                   sx={{
                     position: "relative",
-                    right:"35px",
+                    right: "35px",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
                     color: "black", // Set color to black
                     fontWeight: "bold",
-                    fontFamily:"robolics"
+                    fontFamily: "robolics",
                   }}
                   variant="h5"
                 >
@@ -192,70 +207,104 @@ const Login = () => {
 
                     return (
                       <Form onKeyDown={onKeyDown}>
-  <Box sx={{ height: "95px", marginTop: "20px" }}>
-    <SubHeading sx={{ marginBottom: "5px", color: "black" }}>Email</SubHeading>
-    <PrimaryInput
-      type="text"
-      label=""
-      name="email"
-      placeholder="Email"
-      value={values.email}
-      helperText={errors.email && touched.email ? errors.email : ""}
-      error={errors.email && touched.email ? true : false}
-      onChange={handleChange}
-      onBlur={handleBlur}
-    />
-  </Box>
-  <Box sx={{ height: "95px" }}>
-    <SubHeading sx={{ marginBottom: "5px", color: "black" }}>Password</SubHeading>
-    <PrimaryInput
-      type={showPassword ? "text" : "password"}
-      label=""
-      name="password"
-      placeholder="Password"
-      value={values.password}
-      helperText={errors.password && touched.password ? errors.password : ""}
-      error={errors.password && touched.password ? true : false}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      onClick={hideShowPassword}
-      endAdornment={
-        showPassword ? (
-          <AiOutlineEye color="disabled" />
-        ) : (
-          <AiOutlineEyeInvisible color="disabled" />
-        )
-      }
-    />
-  </Box>
+                        <Box sx={{ height: "95px", marginTop: "20px" }}>
+                          <SubHeading
+                            sx={{ marginBottom: "5px", color: "black" }}
+                          >
+                            Email
+                          </SubHeading>
+                          <PrimaryInput
+                            type="text"
+                            label=""
+                            name="email"
+                            placeholder="Email"
+                            value={values.email}
+                            helperText={
+                              errors.email && touched.email ? errors.email : ""
+                            }
+                            error={errors.email && touched.email ? true : false}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                          />
+                        </Box>
+                        <Box sx={{ height: "95px" }}>
+                          <SubHeading
+                            sx={{ marginBottom: "5px", color: "black" }}
+                          >
+                            Password
+                          </SubHeading>
+                          <PrimaryInput
+                            type={showPassword ? "text" : "password"}
+                            label=""
+                            name="password"
+                            placeholder="Password"
+                            value={values.password}
+                            helperText={
+                              errors.password && touched.password
+                                ? errors.password
+                                : ""
+                            }
+                            error={
+                              errors.password && touched.password ? true : false
+                            }
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            onClick={hideShowPassword}
+                            endAdornment={
+                              showPassword ? (
+                                <AiOutlineEye color="disabled" />
+                              ) : (
+                                <AiOutlineEyeInvisible color="disabled" />
+                              )
+                            }
+                          />
+                        </Box>
 
-  {/* New Here? Create a New Account section */}
-  <Box sx={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
-    <Typography sx={{ color: "black", fontSize: "15px" }}>
-      New here?{" "}
-      <Link to="/signup" style={{ fontWeight: "bold", color: "black", textDecoration: "none" }}>
-        Create a new account
-      </Link>
-    </Typography>
-  </Box>
+                        {/* New Here? Create a New Account section */}
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            marginTop: "10px",
+                          }}
+                        >
+                          <Typography sx={{ color: "black", fontSize: "15px" }}>
+                            New here?{" "}
+                            <Link
+                              to="/signup"
+                              style={{
+                                fontWeight: "bold",
+                                color: "black",
+                                textDecoration: "none",
+                              }}
+                            >
+                              Create a new account
+                            </Link>
+                          </Typography>
+                        </Box>
 
-  <Box sx={{ display: "flex", justifyContent: "end", marginTop: "10px" }}>
-    <Button
-      type="submit"
-      variant="contained"
-      fullWidth
-      disabled={isLoading}
-      sx={{
-        padding: "5px 30px",
-        textTransform: "capitalize",
-        margin: "20px 0",
-      }}
-    >
-      {isLoading ? "Login..." : "Login"}
-    </Button>
-  </Box>
-</Form>
-
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "end",
+                            marginTop: "10px",
+                          }}
+                        >
+                          <Button
+                            type="submit"
+                            variant="contained"
+                            fullWidth
+                            disabled={isLoading}
+                            sx={{
+                              padding: "5px 30px",
+                              textTransform: "capitalize",
+                              margin: "20px 0",
+                            }}
+                          >
+                            {isLoading ? "Login..." : "Login"}
+                          </Button>
+                        </Box>
+                      </Form>
                     );
                   }}
                 </Formik>
@@ -288,7 +337,6 @@ const Login = () => {
                   color: "black", // Set text color to black
                 }}
               >
-                
                 <SubHeading
                   sx={{
                     color: "black", // Set color to black
@@ -299,7 +347,6 @@ const Login = () => {
                     fontSize: "17px",
                   }}
                 >
-                
                   <Box>
                     <Link
                       to="/signup"
@@ -314,9 +361,7 @@ const Login = () => {
                       onMouseOut={(e) =>
                         (e.currentTarget.style.textDecoration = "none")
                       }
-                    >
-                    
-                    </Link>
+                    ></Link>
                   </Box>
                 </SubHeading>
               </Box>

@@ -21,10 +21,14 @@ const authSlice = createSlice({
     setUser(state, action) {
       state.user = action.payload;
     },
+    LogOut(state) {
+      // Clear user data on logout
+      state.user = null;
+    },
   },
 });
 
-export const { setUser } = authSlice.actions;
+export const { setUser, LogOut } = authSlice.actions;
 export default authSlice.reducer;
 
 export const selectedUserId = (state: RootState) =>

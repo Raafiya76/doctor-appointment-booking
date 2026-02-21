@@ -16,4 +16,7 @@ export const signupSchema = Yup.object().shape({
     .matches(/[@$!%*?&]/, passwordMessage)
     .matches(/\d/, passwordMessage)
     .matches(/[A-Z]/, passwordMessage),
+  role: Yup.string()
+    .oneOf(["user", "admin"], "Please select a valid role")
+    .required("Role is required"),
 });

@@ -13,6 +13,7 @@ import Profile from "./views/Profile";
 import Doctors from "./views/Doctors";
 import Users from "./views/Users";
 import Notifications from "./views/Notifications";
+import Landing from "./views/Landing";
 import { useVerifyUserQuery } from "./redux/api/userSlice";
 import { useDispatch } from "react-redux";
 import { selectedUserId, setUser } from "./redux/auth/authSlice";
@@ -20,17 +21,24 @@ import OverlayLoader from "./components/Spinner/OverlayLoader";
 import BookAppointment from "./views/Appointments/components/BookAppointment";
 import DoctorAppointment from "./views/Appointments/components/DoctorAppointment";
 import useTypedSelector from "./hooks/useTypedSelector";
+import AdminDashboard from "./views/AdminDashboard";
+import UserHome from "./views/UserHome";
 
 function App() {
   const dispatch = useDispatch();
   const userId = useTypedSelector(selectedUserId);
 
-  const { data, isLoading, isSuccess } = useVerifyUserQuery({ userId });
+  const { data, isLoading, isSuccess } = useVerifyUserQuery(
+    { userId },
+    { skip: !userId }, // Only call this query if userId exists
+  );
 
   useEffect(() => {
     const userData = localStorage.getItem("user");
-    const user = JSON.parse(userData!);
-    if (isSuccess) {
+    if (!userData) return; // Skip if no user data
+
+    const user = JSON.parse(userData);
+    if (isSuccess && data) {
       const updatedUser = {
         ...user,
         data: {
@@ -49,9 +57,10 @@ function App() {
 
   return (
     <>
-      {isLoading && <OverlayLoader />}
+      {isLoading && userId && <OverlayLoader />}
       <Router>
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route
             path="/login"
             element={
@@ -68,9 +77,27 @@ function App() {
               </PublicRoutes>
             }
           />
+          {/* Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoutes>
+                <AdminDashboard />
+              </ProtectedRoutes>
+            }
+          />
+          {/* User Routes */}
+          <Route
+            path="/user-home"
+            element={
+              <ProtectedRoutes>
+                <UserHome />
+              </ProtectedRoutes>
+            }
+          />
           {/* Protected Routes */}
           <Route
-            path="/"
+            path="/dashboard"
             element={
               <ProtectedRoutes>
                 <Dashboard />

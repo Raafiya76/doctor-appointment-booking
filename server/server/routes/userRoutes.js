@@ -12,6 +12,7 @@ router.post("/login", authController.login);
 
 // USER ConTROLLER
 router.get("/", userController.getAllUsers);
+router.get("/all-appointments", userController.getAllAppointments);
 
 router.use(authController.protect);
 
@@ -22,6 +23,10 @@ router
 router.get("/verify-user/:id", userController.verifyUser);
 router.post("/book-appointment", userController.bookAppointment);
 router.get("/user-appointments/:id", userController.userAppointments);
+router.put(
+  "/update-appointment/:appointmentId",
+  userController.updateAppointmentStatus,
+);
 // NOTIFICATIONS
 router.post("/mark-all-notification-as-seen", userController.notificationSeen);
 router.post("/delete-all-notifications", userController.deleteNotifications);

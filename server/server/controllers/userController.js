@@ -1,4 +1,5 @@
 const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
 const User = require("../models/userModel");
 const Appointment = require("../models/appointmentModel");
 const moment = require("moment");
@@ -16,9 +17,11 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
   const filteredUsers = users.map((user) => {
     return {
+      _id: user._id,
       id: user._id,
       name: user.name,
       email: user.email,
+      phoneNumber: user.phoneNumber,
       createdAt: user.createdAt,
       isAdmin: user.isAdmin,
       isDoctor: user.isDoctor,
@@ -77,6 +80,37 @@ exports.userAppointments = catchAsync(async (req, res, next) => {
     status: "success",
     message: "Appointments fetched successfully.",
     data: appointments,
+  });
+});
+
+exports.getAllAppointments = catchAsync(async (req, res, next) => {
+  const appointments = await Appointment.find();
+
+  res.status(200).json({
+    status: "success",
+    message: "All appointments fetched successfully.",
+    data: appointments,
+  });
+});
+
+exports.updateAppointmentStatus = catchAsync(async (req, res, next) => {
+  const { appointmentId } = req.params;
+  const { status } = req.body;
+
+  const appointment = await Appointment.findByIdAndUpdate(
+    appointmentId,
+    { status },
+    { new: true },
+  );
+
+  if (!appointment) {
+    return next(new AppError("Appointment not found", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "Appointment status updated successfully.",
+    data: appointment,
   });
 });
 

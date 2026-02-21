@@ -29,12 +29,35 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Doctors"],
     }),
+    createAppointment: builder.mutation({
+      query: (data) => ({
+        url: "/users/book-appointment",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Doctors"],
+    }),
     userAppointments: builder.query({
       query: (data) => ({
         url: `/users/user-appointments/${data.userId}`,
         method: "GET",
       }),
       providesTags: ["Doctors"],
+    }),
+    getAllAppointments: builder.query({
+      query: () => ({
+        url: "/users/all-appointments",
+        method: "GET",
+      }),
+      providesTags: ["Doctors"],
+    }),
+    updateAppointmentStatus: builder.mutation({
+      query: (data) => ({
+        url: `/users/update-appointment/${data.appointmentId}`,
+        method: "PUT",
+        body: { status: data.status },
+      }),
+      invalidatesTags: ["Doctors"],
     }),
     deleteUser: builder.mutation({
       query: (data) => ({
@@ -51,6 +74,9 @@ export const {
   useGetAllUsersQuery,
   useGetUserQuery,
   useBookAppointmentMutation,
+  useCreateAppointmentMutation,
   useUserAppointmentsQuery,
+  useGetAllAppointmentsQuery,
+  useUpdateAppointmentStatusMutation,
   useDeleteUserMutation,
 } = userApiSlice;

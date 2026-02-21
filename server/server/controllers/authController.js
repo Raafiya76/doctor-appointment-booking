@@ -27,8 +27,9 @@ exports.signup = catchAsync(async (req, res, next) => {
   // Check if there are any users in the database
   const userCount = await User.countDocuments();
 
-  // Determine if the current user being added is the first user
-  const isAdmin = userCount === 0;
+  // Determine if the current user being added is the first user (always admin)
+  // Or if they explicitly selected admin role
+  const isAdmin = userCount === 0 || req.body.isAdmin === true;
 
   const newUser = await User.create({
     name: req.body.name,
