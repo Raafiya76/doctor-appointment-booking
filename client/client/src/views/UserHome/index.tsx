@@ -66,7 +66,7 @@ const UserHome = () => {
   useEffect(() => {
     console.log("UserHome mounted, refetching doctors");
     refetch();
-  }, []);
+  }, [refetch]);
 
   // Refetch approved doctors when Find Doctors tab is opened
   useEffect(() => {

@@ -51,8 +51,11 @@ export const doctorApiSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
       transformResponse: (response: any) => {
-        console.log("Approved Doctors Response:", response);
-        return response;
+        console.log("Full Approved Doctors Response:", response);
+        console.log("Doctors Array:", response?.data);
+        return {
+          data: response?.data || [],
+        };
       },
       providesTags: ["Doctors"],
     }),
