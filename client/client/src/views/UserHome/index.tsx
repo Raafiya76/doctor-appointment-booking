@@ -36,6 +36,8 @@ interface TabPanelProps {
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
+  
+  console.log(`TabPanel rendered - value: ${value}, index: ${index}, should show: ${value === index}`);
 
   return (
     <div
@@ -82,6 +84,11 @@ const UserHome = () => {
     console.log("Doctor Data Full:", JSON.stringify(data, null, 2));
   }, [data]);
 
+  // Debug: log active tab changes
+  useEffect(() => {
+    console.log("Active Tab Changed to:", activeTab);
+  }, [activeTab]);
+
   const handleLogout = () => {
     dispatch(LogOut());
     localStorage.removeItem("user");
@@ -123,6 +130,7 @@ const UserHome = () => {
             fullWidth
             variant={activeTab === 0 ? "contained" : "outlined"}
             onClick={() => {
+              console.log("Clicked Find Doctors, setting activeTab to 0");
               setActiveTab(0);
               setMobileOpen(false);
             }}
@@ -131,14 +139,18 @@ const UserHome = () => {
                 activeTab === 0
                   ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                   : "transparent",
+              color: activeTab === 0 ? "white" : "black",
+              fontWeight: activeTab === 0 ? "bold" : "normal",
+              py: 1.5,
             }}
           >
-            Find Doctors
+            🏥 Find Doctors
           </Button>
           <Button
             fullWidth
             variant={activeTab === 1 ? "contained" : "outlined"}
             onClick={() => {
+              console.log("Clicked My Appointments, setting activeTab to 1");
               setActiveTab(1);
               setMobileOpen(false);
             }}
@@ -147,14 +159,18 @@ const UserHome = () => {
                 activeTab === 1
                   ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                   : "transparent",
+              color: activeTab === 1 ? "white" : "black",
+              fontWeight: activeTab === 1 ? "bold" : "normal",
+              py: 1.5,
             }}
           >
-            My Appointments
+            📅 My Appointments
           </Button>
           <Button
             fullWidth
             variant={activeTab === 2 ? "contained" : "outlined"}
             onClick={() => {
+              console.log("Clicked Apply as Doctor, setting activeTab to 2");
               setActiveTab(2);
               setMobileOpen(false);
             }}
@@ -163,9 +179,12 @@ const UserHome = () => {
                 activeTab === 2
                   ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
                   : "transparent",
+              color: activeTab === 2 ? "white" : "black",
+              fontWeight: activeTab === 2 ? "bold" : "normal",
+              py: 1.5,
             }}
           >
-            Apply as Doctor
+            ✍️ Apply as Doctor
           </Button>
         </Box>
       </Box>
