@@ -6,7 +6,7 @@ import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 // Formik Imports
 import { Form, Formik, FormikProps } from "formik";
 // Utils Imports
-import { onKeyDown } from "../../utils";
+import { onKeyDown, removeDashAndSpace } from "../../utils";
 // Validation Schema
 import { signupSchema } from "./components/validationSchema";
 // MUI Imports
@@ -69,7 +69,7 @@ const Signup = () => {
     const payload = {
       name: data.name,
       email: data.email,
-      phoneNumber: data.phoneNumber,
+      phoneNumber: removeDashAndSpace(data.phoneNumber),
       password: data.password,
       isAdmin: data.role === "admin" ? true : false,
     };

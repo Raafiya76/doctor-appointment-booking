@@ -50,6 +50,10 @@ export const doctorApiSlice = apiSlice.injectEndpoints({
         url: "doctors/approved-doctors",
         method: "GET",
       }),
+      transformResponse: (response: any) => {
+        console.log("Approved Doctors Response:", response);
+        return response;
+      },
       providesTags: ["Doctors"],
     }),
     checkBookingAvailability: builder.mutation({

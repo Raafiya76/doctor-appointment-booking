@@ -64,15 +64,23 @@ const UserHome = () => {
 
   // Refetch approved doctors on component mount
   useEffect(() => {
+    console.log("UserHome mounted, refetching doctors");
     refetch();
   }, []);
 
   // Refetch approved doctors when Find Doctors tab is opened
   useEffect(() => {
     if (activeTab === 0) {
+      console.log("Find Doctors tab opened, refetching doctors");
       refetch();
     }
   }, [activeTab, refetch]);
+
+  // Debug: log current doctor data
+  useEffect(() => {
+    console.log("Doctor Data:", data);
+    console.log("Doctor Data Full:", JSON.stringify(data, null, 2));
+  }, [data]);
 
   const handleLogout = () => {
     dispatch(LogOut());
