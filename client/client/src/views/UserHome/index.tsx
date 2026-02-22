@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Card,
@@ -60,7 +60,19 @@ const UserHome = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
 
-  const { data, isLoading } = useGetApprovedDoctorsQuery({});
+  const { data, isLoading, refetch } = useGetApprovedDoctorsQuery({});
+
+  // Refetch approved doctors on component mount
+  useEffect(() => {
+    refetch();
+  }, []);
+
+  // Refetch approved doctors when Find Doctors tab is opened
+  useEffect(() => {
+    if (activeTab === 0) {
+      refetch();
+    }
+  }, [activeTab, refetch]);
 
   const handleLogout = () => {
     dispatch(LogOut());
@@ -238,9 +250,24 @@ const UserHome = () => {
 
           {/* Tab 0: Find Doctors */}
           <TabPanel value={activeTab} index={0}>
-            <Heading sx={{ mb: 3 }}>Available Doctors</Heading>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+              <Heading>Available Doctors</Heading>
+              <Button 
+                size="small"
+                variant="outlined"
+                onClick={() => refetch()}
+              >
+                Refresh Doctors
+              </Button>
+            </Box>
 
-            {data?.data && data.data.length > 0 ? (
+            {isLoading ? (
+              <Card sx={{ p: 3, textAlign: "center" }}>
+                <Typography color="textSecondary">
+                  Loading doctors...
+                </Typography>
+              </Card>
+            ) : data?.data && data.data.length > 0 ? (
               <Grid container spacing={2}>
                 {data.data.map((doctor: any) => (
                   <Grid item xs={12} sm={6} md={4} key={doctor._id}>
