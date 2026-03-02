@@ -46,16 +46,27 @@ export const doctorApiSlice = apiSlice.injectEndpoints({
       providesTags: ["Doctors"],
     }),
     getApprovedDoctors: builder.query({
-      query: () => ({
-        url: "doctors/approved-doctors",
-        method: "GET",
-      }),
-      transformResponse: (response: any) => {
-        console.log("Full Approved Doctors Response:", response);
-        console.log("Doctors Array:", response?.data);
+      query: () => {
+        const url = "doctors/approved-doctors";
+        console.log("🔵 Calling getApprovedDoctors with URL:", url);
         return {
+          url: url,
+          method: "GET",
+        };
+      },
+      transformResponse: (response: any) => {
+        console.log("🟢 Full Approved Doctors Response:", response);
+        console.log("🟢 Doctors Array from response.data:", response?.data);
+        console.log("🟢 Doctors Array length:", response?.data?.length);
+        const transformedData = {
           data: response?.data || [],
         };
+        console.log("🟢 Transformed data being returned:", transformedData);
+        return transformedData;
+      },
+      transformErrorResponse: (response: any) => {
+        console.error("🔴 Approved Doctors Error Response:", response);
+        return response;
       },
       providesTags: ["Doctors"],
     }),

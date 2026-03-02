@@ -53,17 +53,24 @@ exports.bookAppointment = catchAsync(async (req, res, next) => {
   const newAppointment = new Appointment(req.body);
   await newAppointment.save();
 
-  // Find doctor and send notification
-  const user = await User.findById(req.body.doctorInfo.userId);
-  user.unseenNotifications.push({
-    type: "new-appointment-request",
-    message: `A new appointment request has been made by ${req.body.userInfo.name}`,
-    data: {
-      name: req.body.userInfo.name,
-    },
-    onClickPath: "/doctor/appointments",
-  });
-  await user.save();
+  // Find doctor and send notification (only if userId is a valid ObjectId)
+  const mongoose = require("mongoose");
+  const doctorUserId = req.body.doctorInfo?.userId;
+
+  if (doctorUserId && mongoose.Types.ObjectId.isValid(doctorUserId)) {
+    const user = await User.findById(doctorUserId);
+    if (user) {
+      user.unseenNotifications.push({
+        type: "new-appointment-request",
+        message: `A new appointment request has been made by ${req.body.userInfo.name}`,
+        data: {
+          name: req.body.userInfo.name,
+        },
+        onClickPath: "/doctor/appointments",
+      });
+      await user.save();
+    }
+  }
 
   res.status(200).json({
     status: "success",
@@ -167,11 +174,33 @@ exports.deleteNotifications = catchAsync(async (req, res, next) => {
 exports.doctorStatus = catchAsync(async (req, res, next) => {
   const { doctorId, status, userId } = req.body;
 
-  const doctor = await Doctor.findByIdAndUpdate(doctorId, { status });
+  console.log("🔵 doctorStatus - Received payload:", {
+    doctorId,
+    status,
+    userId,
+  });
+
+  // Update doctor status with { new: true } to get updated document
+  const doctor = await Doctor.findByIdAndUpdate(
+    doctorId,
+    { status },
+    { new: true },
+  );
+
+  console.log("🟢 doctorStatus - Updated doctor:", doctor);
+
   if (!doctor) return next(new AppError("Doctor not found", 404));
 
   // Send Notification To User
   const user = await User.findById(userId);
+
+  if (!user) {
+    console.error("🔴 User not found with userId:", userId);
+    return next(new AppError("User not found", 404));
+  }
+
+  console.log("🟢 User found:", user._id, user.email);
+
   const unseenNotifications = user.unseenNotifications;
   unseenNotifications.push({
     type: "new-doctor-request-changed",
@@ -185,7 +214,15 @@ exports.doctorStatus = catchAsync(async (req, res, next) => {
   user.isDoctor = status === "approved" ? true : false;
   await user.save();
 
+  console.log("🟢 User updated - isDoctor:", user.isDoctor);
+
   const doctors = await Doctor.find();
+
+  console.log("🟢 All doctors after update:", doctors.length);
+  console.log(
+    "🟢 Approved doctors count:",
+    doctors.filter((d) => d.status === "approved").length,
+  );
 
   res.status(200).send({
     status: true,

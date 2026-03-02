@@ -72,7 +72,7 @@ const Login = () => {
         if (isAdmin) {
           navigate("/admin");
         } else {
-          navigate("/user-home");
+          navigate("/userhome");
         }
       }
       if (user?.error) {

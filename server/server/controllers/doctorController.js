@@ -6,18 +6,38 @@ const Appointment = require("../models/appointmentModel");
 const moment = require("moment");
 
 exports.doctorSignup = catchAsync(async (req, res, next) => {
+  console.log("🔵 doctorSignup - Request body:", {
+    email: req.body.email,
+    userId: req.body.userId,
+    fullName: req.body.fullName,
+  });
+
   // find doctor if already applied
   const doctor = await Doctor.findOne({ email: req.body.email });
   if (doctor)
     return next(
       new AppError(
         "Doctor already applied Please contact your admin clinic",
-        400
-      )
+        400,
+      ),
     );
 
   const newDoctor = new Doctor({ ...req.body, status: "pending" });
+
+  console.log("🟢 New doctor object created:", {
+    email: newDoctor.email,
+    userId: newDoctor.userId,
+    fullName: newDoctor.fullName,
+  });
+
   await newDoctor.save();
+
+  console.log("🟢 Doctor saved to database:", {
+    _id: newDoctor._id,
+    email: newDoctor.email,
+    userId: newDoctor.userId,
+    status: newDoctor.status,
+  });
 
   const adminUser = await User.findOne({ isAdmin: true });
 
@@ -67,7 +87,7 @@ exports.updateDoctor = catchAsync(async (req, res, next) => {
   const doctor = await Doctor.findOneAndUpdate(
     { userId: req.params.id },
     body,
-    { new: true }
+    { new: true },
   );
 
   if (!doctor) return next(new AppError("Doctor not found", 404));
@@ -80,7 +100,12 @@ exports.updateDoctor = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllApprovedDoctors = catchAsync(async (req, res, next) => {
+  console.log("🔵 getAllApprovedDoctors - Fetching approved doctors");
+
   const doctors = await Doctor.find({ status: "approved" });
+
+  console.log("🟢 Approved doctors found:", doctors.length);
+  console.log("🟢 Approved doctors data:", doctors);
 
   res.status(200).send({
     status: true,
@@ -115,8 +140,8 @@ exports.checkBookingAvailability = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         `Please select a time within the doctor's working hours ${displayFromTime} to ${displayToTime}`,
-        400
-      )
+        400,
+      ),
     );
   }
 

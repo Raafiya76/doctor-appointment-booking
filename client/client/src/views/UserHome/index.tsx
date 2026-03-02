@@ -1,93 +1,46 @@
 import { useState, useEffect } from "react";
-import {
-  Box,
-  Card,
-  Button,
-  Grid,
-  Drawer,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Menu,
-  MenuItem,
-} from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { LogOut } from "../../redux/auth/authSlice";
-import { AiOutlineMenu } from "react-icons/ai";
-import { MdLogout } from "react-icons/md";
-import { Heading } from "../../components/Heading";
+import {
+  LogOut,
+  selectedUserId,
+  selectedUserName,
+  selectedUserEmail,
+  selectedUserPhoneNumber,
+} from "../../redux/auth/authSlice";
 import { useGetApprovedDoctorsQuery } from "../../redux/api/doctorSlice";
-import OverlayLoader from "../../components/Spinner/OverlayLoader";
-import BookAppointmentModal from "./components/BookAppointmentModal";
+import { useCreateAppointmentMutation } from "../../redux/api/userSlice";
 import useTypedSelector from "../../hooks/useTypedSelector";
-import { selectedUserId } from "../../redux/auth/authSlice";
-import Appointments from "../Appointments";
-import ApplyDoctor from "../ApplyDoctor";
-
-const DRAWER_WIDTH = 250;
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-  
-  console.log(`TabPanel rendered - value: ${value}, index: ${index}, should show: ${value === index}`);
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`tabpanel-${index}`}
-      aria-labelledby={`tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ py: 2 }}>{children}</Box>}
-    </div>
-  );
-}
+import OverlayLoader from "../../components/Spinner/OverlayLoader";
+import ToastAlert from "../../components/ToastAlert/ToastAlert";
+import { FaCalendarAlt, FaUserMd, FaSignOutAlt } from "react-icons/fa";
+import { IoNotifications } from "react-icons/io5";
+import BookingModal from "./components/BookingModal";
 
 const UserHome = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const userId = useTypedSelector(selectedUserId);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const userName = useTypedSelector(selectedUserName);
+  const userEmail = useTypedSelector(selectedUserEmail);
+  const userPhone = useTypedSelector(selectedUserPhoneNumber);
+
   const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
   const [openBooking, setOpenBooking] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [activeTab, setActiveTab] = useState(0);
+  const [toast, setToast] = useState({
+    message: "",
+    appearence: false,
+    type: "",
+  });
 
   const { data, isLoading, refetch } = useGetApprovedDoctorsQuery({});
+  const [createAppointment, { isLoading: bookingLoading }] =
+    useCreateAppointmentMutation();
 
-  // Refetch approved doctors on component mount
   useEffect(() => {
-    console.log("UserHome mounted, refetching doctors");
     refetch();
   }, [refetch]);
-
-  // Refetch approved doctors when Find Doctors tab is opened
-  useEffect(() => {
-    if (activeTab === 0) {
-      console.log("Find Doctors tab opened, refetching doctors");
-      refetch();
-    }
-  }, [activeTab, refetch]);
-
-  // Debug: log current doctor data
-  useEffect(() => {
-    console.log("Doctor Data:", data);
-    console.log("Doctor Data Full:", JSON.stringify(data, null, 2));
-  }, [data]);
-
-  // Debug: log active tab changes
-  useEffect(() => {
-    console.log("Active Tab Changed to:", activeTab);
-  }, [activeTab]);
 
   const handleLogout = () => {
     dispatch(LogOut());
@@ -95,296 +48,279 @@ const UserHome = () => {
     navigate("/login");
   };
 
-  const handleMenuOpen = (e: any) => {
-    setAnchorEl(e.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleBookAppointment = (doctor: any) => {
+  const handleBookNow = (doctor: any) => {
     setSelectedDoctor(doctor);
     setOpenBooking(true);
   };
 
-  const drawerContent = (
-    <Box>
-      <Box
-        sx={{
-          p: 2,
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
-        }}
-      >
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-          Patient Menu
-        </Typography>
-      </Box>
-      <Box sx={{ p: 2 }}>
-        <Typography variant="body2" sx={{ fontWeight: "bold", mb: 2 }}>
-          Navigation
-        </Typography>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-          <Button
-            fullWidth
-            variant={activeTab === 0 ? "contained" : "outlined"}
-            onClick={() => {
-              console.log("Clicked Find Doctors, setting activeTab to 0");
-              setActiveTab(0);
-              setMobileOpen(false);
-            }}
-            sx={{
-              background:
-                activeTab === 0
-                  ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                  : "transparent",
-              color: activeTab === 0 ? "white" : "black",
-              fontWeight: activeTab === 0 ? "bold" : "normal",
-              py: 1.5,
-            }}
-          >
-            🏥 Find Doctors
-          </Button>
-          <Button
-            fullWidth
-            variant={activeTab === 1 ? "contained" : "outlined"}
-            onClick={() => {
-              console.log("Clicked My Appointments, setting activeTab to 1");
-              setActiveTab(1);
-              setMobileOpen(false);
-            }}
-            sx={{
-              background:
-                activeTab === 1
-                  ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                  : "transparent",
-              color: activeTab === 1 ? "white" : "black",
-              fontWeight: activeTab === 1 ? "bold" : "normal",
-              py: 1.5,
-            }}
-          >
-            📅 My Appointments
-          </Button>
-          <Button
-            fullWidth
-            variant={activeTab === 2 ? "contained" : "outlined"}
-            onClick={() => {
-              console.log("Clicked Apply as Doctor, setting activeTab to 2");
-              setActiveTab(2);
-              setMobileOpen(false);
-            }}
-            sx={{
-              background:
-                activeTab === 2
-                  ? "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
-                  : "transparent",
-              color: activeTab === 2 ? "white" : "black",
-              fontWeight: activeTab === 2 ? "bold" : "normal",
-              py: 1.5,
-            }}
-          >
-            ✍️ Apply as Doctor
-          </Button>
-        </Box>
-      </Box>
-    </Box>
-  );
+  const handleBookAppointment = async (dateTime: string, file: File | null) => {
+    if (!dateTime) {
+      setToast({
+        message: "Please select date and time",
+        appearence: true,
+        type: "error",
+      });
+      return;
+    }
+
+    try {
+      const payload = {
+        userId,
+        doctorId: selectedDoctor.userId,
+        userInfo: {
+          name: userName,
+          email: userEmail,
+          phoneNumber: userPhone,
+        },
+        doctorInfo: {
+          userId: selectedDoctor.userId,
+          prefix: selectedDoctor.prefix,
+          fullName: selectedDoctor.fullName,
+          phoneNumber: selectedDoctor.phoneNumber,
+          specialization: selectedDoctor.specialization,
+        },
+        date: dateTime,
+        time: dateTime,
+        status: "pending",
+      };
+
+      const result: any = await createAppointment(payload);
+
+      if (result?.data?.status === "success" || result?.data?.status) {
+        setToast({
+          message: "Appointment book successfully",
+          appearence: true,
+          type: "success",
+        });
+        setOpenBooking(false);
+        setSelectedDoctor(null);
+      } else {
+        setToast({
+          message: result?.error?.data?.message || "Failed to book appointment",
+          appearence: true,
+          type: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Booking error:", error);
+      setToast({
+        message: "Something went wrong",
+        appearence: true,
+        type: "error",
+      });
+    }
+  };
+
+  const formatTime = (time: string) => {
+    if (!time) return "";
+    // Handle ISO datetime strings
+    if (time.includes("T")) {
+      const date = new Date(time);
+      return date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+    }
+    return time;
+  };
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#f5f5f5" }}>
-      {/* Desktop Sidebar */}
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: DRAWER_WIDTH,
-          flexShrink: 0,
-          display: { xs: "none", md: "block" },
-          "& .MuiDrawer-paper": {
-            width: DRAWER_WIDTH,
-            boxSizing: "border-box",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-          },
-        }}
-      >
-        {drawerContent}
-      </Drawer>
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      {isLoading && <OverlayLoader />}
 
-      {/* Mobile Drawer */}
-      <Drawer
-        anchor="left"
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        sx={{ display: { xs: "block", md: "none" } }}
-      >
-        <Box sx={{ width: 250 }}>{drawerContent}</Box>
-      </Drawer>
-
-      {/* Main Content */}
+      {/* Sidebar */}
       <Box
         sx={{
-          flex: 1,
+          width: 200,
+          bgcolor: "#1a4b8c",
+          color: "white",
           display: "flex",
           flexDirection: "column",
-          overflow: "hidden",
         }}
       >
-        {/* AppBar */}
-        <AppBar
-          position="static"
-          sx={{
-            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-          }}
-        >
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              sx={{ mr: 2, display: { md: "none" } }}
-            >
-              <AiOutlineMenu size={24} />
-            </IconButton>
-            <Typography variant="h6" sx={{ flex: 1, fontWeight: "bold" }}>
-              YaseenCareBook - Find Your Doctor
-            </Typography>
-            <IconButton
-              color="inherit"
-              onClick={handleMenuOpen}
-              sx={{ display: "flex", alignItems: "center", gap: 1 }}
-            >
-              <MdLogout size={20} />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-            >
-              <MenuItem onClick={handleLogout}>Logout</MenuItem>
-            </Menu>
-          </Toolbar>
-        </AppBar>
+        <Box sx={{ p: 2, borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", fontSize: "16px" }}
+          >
+            YaseenCareBook
+          </Typography>
+        </Box>
 
-        {/* Content Area */}
+        <Box sx={{ flex: 1, pt: 2 }}>
+          <Box
+            onClick={() => navigate("/userhome/userappointments")}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              px: 2,
+              py: 1.5,
+              cursor: "pointer",
+              "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+            }}
+          >
+            <FaCalendarAlt size={16} />
+            <Typography fontSize="14px">Appointments</Typography>
+          </Box>
+
+          <Box
+            onClick={() => navigate("/apply-doctor")}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              px: 2,
+              py: 1.5,
+              cursor: "pointer",
+              "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+            }}
+          >
+            <FaUserMd size={16} />
+            <Typography fontSize="14px">Apply doctor</Typography>
+          </Box>
+
+          <Box
+            onClick={handleLogout}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1.5,
+              px: 2,
+              py: 1.5,
+              cursor: "pointer",
+              "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+            }}
+          >
+            <FaSignOutAlt size={16} />
+            <Typography fontSize="14px">Logout</Typography>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Main Content */}
+      <Box sx={{ flex: 1, bgcolor: "#f5f5f5" }}>
+        {/* Header */}
         <Box
           sx={{
-            flex: 1,
-            overflow: "auto",
-            p: { xs: 1, md: 2 },
+            bgcolor: "white",
+            px: 3,
+            py: 1.5,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderBottom: "1px solid #eee",
           }}
         >
-          {isLoading && <OverlayLoader />}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <IoNotifications size={20} />
+            <Typography fontWeight="bold">{userName}</Typography>
+          </Box>
+        </Box>
 
-          {/* Tab 0: Find Doctors */}
-          <TabPanel value={activeTab} index={0}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-              <Heading>Available Doctors</Heading>
-              <Button 
-                size="small"
-                variant="outlined"
-                onClick={() => refetch()}
-              >
-                Refresh Doctors
-              </Button>
-            </Box>
+        {/* Content */}
+        <Box sx={{ p: 3 }}>
+          <Box
+            sx={{
+              bgcolor: "white",
+              borderRadius: 1,
+              p: 3,
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            }}
+          >
+            <Typography
+              variant="h5"
+              sx={{ textAlign: "center", mb: 3, fontWeight: 500 }}
+            >
+              Home
+            </Typography>
 
-            {isLoading ? (
-              <Card sx={{ p: 3, textAlign: "center" }}>
-                <Typography color="textSecondary">
-                  Loading doctors...
-                </Typography>
-              </Card>
-            ) : data?.data && data.data.length > 0 ? (
-              <Grid container spacing={2}>
-                {data.data.map((doctor: any) => (
-                  <Grid item xs={12} sm={6} md={4} key={doctor._id}>
-                    <Card
+            {/* Doctor Cards */}
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+              {data?.data && data.data.length > 0 ? (
+                data.data.map((doctor: any) => (
+                  <Box
+                    key={doctor._id}
+                    sx={{
+                      border: "1px solid #ddd",
+                      borderRadius: 1,
+                      p: 2,
+                      minWidth: 280,
+                      maxWidth: 320,
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      sx={{ fontWeight: "bold", mb: 1, fontSize: "16px" }}
+                    >
+                      {doctor.prefix} {doctor.fullName}
+                    </Typography>
+
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Phone:</strong> {doctor.phoneNumber}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Address:</strong> {doctor.address}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Specialization:</strong> {doctor.specialization}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Experience:</strong> {doctor.experience}{" "}
+                      {doctor.experience.toString().includes("year")
+                        ? ""
+                        : "Yrs"}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      <strong>Fees:</strong> {doctor.feePerConsultation}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 1.5 }}>
+                      <strong>Timing:</strong> {formatTime(doctor.fromTime)} :{" "}
+                      {formatTime(doctor.toTime)}
+                    </Typography>
+
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={() => handleBookNow(doctor)}
                       sx={{
-                        p: 2,
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-                        transition: "all 0.3s ease",
-                        "&:hover": {
-                          boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
-                          transform: "translateY(-4px)",
-                        },
+                        bgcolor: "#1976d2",
+                        textTransform: "none",
+                        "&:hover": { bgcolor: "#1565c0" },
                       }}
                     >
-                      <Typography
-                        variant="h6"
-                        sx={{ fontWeight: "bold", mb: 1 }}
-                      >
-                        {`${doctor.prefix} ${doctor.fullName}`}
-                      </Typography>
-
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="body2" sx={{ mb: 1 }}>
-                          <strong>Specialization:</strong>{" "}
-                          {doctor.specialization}
-                        </Typography>
-                        <Typography variant="body2" sx={{ mb: 1 }}>
-                          <strong>Experience:</strong> {doctor.experience}
-                        </Typography>
-                        <Typography variant="body2" sx={{ mb: 1 }}>
-                          <strong>Fees:</strong> ${doctor.feePerConsultation}
-                        </Typography>
-                        <Typography variant="body2" sx={{ mb: 1 }}>
-                          <strong>Address:</strong> {doctor.address}
-                        </Typography>
-                        <Typography variant="body2" sx={{ mb: 1 }}>
-                          <strong>Timings:</strong> {doctor.fromTime} -{" "}
-                          {doctor.toTime}
-                        </Typography>
-                        <Typography variant="body2">
-                          <strong>Phone:</strong> {doctor.phoneNumber}
-                        </Typography>
-                      </Box>
-
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                          mt: 2,
-                          background:
-                            "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                        }}
-                        onClick={() => handleBookAppointment(doctor)}
-                      >
-                        Book Now
-                      </Button>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            ) : (
-              <Card sx={{ p: 3, textAlign: "center" }}>
+                      Book Now
+                    </Button>
+                  </Box>
+                ))
+              ) : (
                 <Typography color="textSecondary">
-                  No doctors available at the moment
+                  No doctors available
                 </Typography>
-              </Card>
-            )}
-          </TabPanel>
-
-          {/* Tab 1: My Appointments */}
-          <TabPanel value={activeTab} index={1}>
-            <Appointments />
-          </TabPanel>
-
-          {/* Tab 2: Apply as Doctor */}
-          <TabPanel value={activeTab} index={2}>
-            <ApplyDoctor />
-          </TabPanel>
+              )}
+            </Box>
+          </Box>
         </Box>
       </Box>
 
       {/* Booking Modal */}
-      <BookAppointmentModal
+      <BookingModal
         open={openBooking}
-        onClose={() => setOpenBooking(false)}
+        onClose={() => {
+          setOpenBooking(false);
+          setSelectedDoctor(null);
+        }}
         doctor={selectedDoctor}
-        userId={userId}
+        onBook={handleBookAppointment}
+        isLoading={bookingLoading}
+      />
+
+      <ToastAlert
+        appearence={toast.appearence}
+        type={toast.type}
+        message={toast.message}
+        handleClose={() => setToast({ ...toast, appearence: false })}
       />
     </Box>
   );

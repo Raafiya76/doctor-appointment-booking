@@ -14,9 +14,9 @@ const ProtectedRoutes = (props: any) => {
 
     // Check if user has the correct role to access the route
     if (location.pathname === "/admin" && !isAdmin) {
-      return <Navigate to="/user-home" />;
+      return <Navigate to="/userhome" />;
     }
-    if (location.pathname === "/user-home" && isAdmin) {
+    if (location.pathname.startsWith("/userhome") && isAdmin) {
       return <Navigate to="/admin" />;
     }
 

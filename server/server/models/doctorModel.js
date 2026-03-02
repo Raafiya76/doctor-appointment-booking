@@ -5,7 +5,8 @@ const doctorSchema = new mongoose.Schema(
   {
     userId: {
       type: String,
-      required: true,
+      required: [true, "userId is required"],
+      trim: true,
     },
     prefix: {
       type: String,
@@ -60,11 +61,12 @@ const doctorSchema = new mongoose.Schema(
     status: {
       type: String,
       default: "pending",
+      enum: ["pending", "approved", "blocked"],
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Doctor = new mongoose.model("Doctor", doctorSchema);

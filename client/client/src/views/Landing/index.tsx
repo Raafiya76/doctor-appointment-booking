@@ -1,12 +1,5 @@
 import { Link } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Container,
-  Typography,
-  AppBar,
-  Toolbar,
-} from "@mui/material";
+import { Box, Button, Typography, AppBar, Toolbar } from "@mui/material";
 
 const Landing = () => {
   return (
@@ -14,49 +7,61 @@ const Landing = () => {
       {/* Navbar */}
       <AppBar
         position="static"
+        elevation={0}
         sx={{
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          background: "#fff",
+          borderBottom: "1px solid #eee",
         }}
       >
         <Toolbar>
           <Typography
-            variant="h5"
+            variant="h6"
             sx={{
               flexGrow: 1,
               fontWeight: "bold",
-              fontSize: "24px",
-              letterSpacing: "1px",
+              fontSize: "20px",
+              color: "#333",
             }}
           >
             YaseenCareBook
           </Typography>
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box sx={{ display: "flex", gap: 3 }}>
             <Button
-              color="inherit"
+              component={Link}
+              to="/"
+              sx={{
+                color: "#333",
+                fontWeight: "500",
+                fontSize: "14px",
+                textTransform: "none",
+                "&:hover": { backgroundColor: "transparent", color: "#1976d2" },
+              }}
+            >
+              Home
+            </Button>
+            <Button
               component={Link}
               to="/login"
               sx={{
-                fontWeight: "600",
+                color: "#333",
+                fontWeight: "500",
                 fontSize: "14px",
                 textTransform: "none",
-                "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" },
+                "&:hover": { backgroundColor: "transparent", color: "#1976d2" },
               }}
             >
               Login
             </Button>
             <Button
-              color="inherit"
               component={Link}
               to="/signup"
               sx={{
-                fontWeight: "600",
+                color: "#333",
+                fontWeight: "500",
                 fontSize: "14px",
                 textTransform: "none",
-                backgroundColor: "rgba(255,255,255,0.2)",
-                "&:hover": { backgroundColor: "rgba(255,255,255,0.3)" },
+                "&:hover": { backgroundColor: "transparent", color: "#1976d2" },
               }}
-              variant="outlined"
             >
               Register
             </Button>
@@ -68,63 +73,92 @@ const Landing = () => {
       <Box
         sx={{
           flex: 1,
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          background: "#c8d8d4",
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          color: "white",
-          textAlign: "center",
-          padding: "40px 20px",
+          padding: "40px 60px",
         }}
       >
-        <Container maxWidth="md">
+        {/* Left Side - Doctor Image */}
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-end",
+          }}
+        >
+          <img
+            src="https://img.freepik.com/free-photo/team-young-specialist-doctors-standing-corridor-hospital_1303-21199.jpg"
+            alt="Doctors"
+            style={{
+              maxWidth: "100%",
+              maxHeight: "500px",
+              objectFit: "contain",
+            }}
+          />
+        </Box>
+
+        {/* Right Side - Content */}
+        <Box
+          sx={{
+            flex: 1,
+            paddingLeft: "40px",
+          }}
+        >
           <Typography
-            variant="h2"
+            variant="h3"
             sx={{
               fontWeight: "bold",
-              marginBottom: "20px",
-              fontSize: { xs: "32px", sm: "48px", md: "56px" },
-              lineHeight: "1.2",
+              color: "#333",
+              fontSize: { xs: "28px", sm: "36px", md: "42px" },
+              lineHeight: "1.3",
+              marginBottom: "10px",
             }}
           >
-            Effortlessly Schedule Your Doctor Appointments
+            Effortlessly schedule your doctor
           </Typography>
           <Typography
-            variant="h6"
+            variant="h5"
             sx={{
-              marginBottom: "40px",
-              fontSize: "18px",
-              fontWeight: "300",
-              maxWidth: "600px",
-              margin: "0 auto 40px",
-              lineHeight: "1.6",
+              color: "#333",
+              fontSize: { xs: "20px", sm: "24px", md: "28px" },
+              marginBottom: "8px",
             }}
           >
-            Connect with experienced doctors, book appointments in just a few
-            clicks, and manage your healthcare efficiently.
+            appointments with just a few clicks,
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              color: "#555",
+              fontSize: "18px",
+              marginBottom: "30px",
+            }}
+          >
+            putting your health in your hands.
           </Typography>
           <Button
             variant="contained"
             size="large"
             component={Link}
-            to="/signup"
+            to="/login"
             sx={{
-              backgroundColor: "white",
-              color: "#667eea",
-              fontWeight: "bold",
-              padding: "12px 40px",
+              backgroundColor: "#2196f3",
+              color: "#fff",
+              fontWeight: "500",
+              padding: "12px 28px",
               fontSize: "16px",
               textTransform: "none",
-              borderRadius: "50px",
+              borderRadius: "4px",
               "&:hover": {
-                backgroundColor: "#f0f0f0",
+                backgroundColor: "#1976d2",
               },
-              boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
             }}
           >
-            Book Your Doctor
+            Book your Doctor
           </Button>
-        </Container>
+        </Box>
       </Box>
     </Box>
   );

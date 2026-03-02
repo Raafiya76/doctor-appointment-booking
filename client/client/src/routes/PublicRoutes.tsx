@@ -7,7 +7,7 @@ const PublicRoutes = (props: any) => {
       const user = JSON.parse(userData);
       const isAdmin = user?.data?.user?.isAdmin;
       // Redirect logged-in users based on their role
-      return <Navigate to={isAdmin ? "/admin" : "/user-home"} />;
+      return <Navigate to={isAdmin ? "/admin" : "/userhome"} />;
     } catch (error) {
       // If parsing fails, redirect to home
       return <Navigate to="/" />;

@@ -23,6 +23,7 @@ import DoctorAppointment from "./views/Appointments/components/DoctorAppointment
 import useTypedSelector from "./hooks/useTypedSelector";
 import AdminDashboard from "./views/AdminDashboard";
 import UserHome from "./views/UserHome";
+import UserAppointments from "./views/UserHome/UserAppointments";
 
 function App() {
   const dispatch = useDispatch();
@@ -88,10 +89,18 @@ function App() {
           />
           {/* User Routes */}
           <Route
-            path="/user-home"
+            path="/userhome"
             element={
               <ProtectedRoutes>
                 <UserHome />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/userhome/userappointments"
+            element={
+              <ProtectedRoutes>
+                <UserAppointments />
               </ProtectedRoutes>
             }
           />

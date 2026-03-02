@@ -142,9 +142,10 @@ const ApplyDoctor = () => {
   };
 
   // Doctor Get API
-  const { data, isLoading: doctorLoading } = useGetDoctorQuery({
-    userId,
-  });
+  const { data, isLoading: doctorLoading } = useGetDoctorQuery(
+    { userId },
+    { skip: !userId },
+  );
 
   return (
     <>

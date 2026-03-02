@@ -18,9 +18,12 @@ const tableHead = ["Id", "Doctor", "Phone", "Date", "Status"];
 const Appointments = () => {
   const userId = useTypedSelector(selectedUserId);
 
-  const { data, isLoading, isSuccess } = useUserAppointmentsQuery({
-    userId,
-  });
+  console.log("Appointments component rendered with userId:", userId);
+
+  const { data, isLoading, isSuccess } = useUserAppointmentsQuery(
+    { userId },
+    { skip: !userId },
+  );
 
   return (
     <>
@@ -44,7 +47,7 @@ const Appointments = () => {
                     {maskingPhoneNumber(row?.doctorInfo?.phoneNumber)}
                   </StyledTableCell>
                   <StyledTableCell>{`${formatDate(row?.date)} ${formatTime(
-                    row?.time
+                    row?.time,
                   )}`}</StyledTableCell>
                   <StyledTableCell>
                     <CustomChip
@@ -52,10 +55,10 @@ const Appointments = () => {
                         row.status === "pending"
                           ? "Pending"
                           : row.status === "approved"
-                          ? "Approved"
-                          : row.status === "rejected"
-                          ? "Cancelled"
-                          : ""
+                            ? "Approved"
+                            : row.status === "rejected"
+                              ? "Cancelled"
+                              : ""
                       }
                     />
                   </StyledTableCell>
