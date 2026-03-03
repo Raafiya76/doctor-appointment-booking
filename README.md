@@ -1,4 +1,4 @@
-# Doctor Appointment Booking System
+# DocSpot: Seamless Appointment Booking for Health
 
 A full-stack web application for booking doctor appointments. Users can register, browse available doctors, and book appointments. Doctors can apply for registration, manage their availability, and handle appointment requests. Admins can approve doctor applications and manage the platform.
 
