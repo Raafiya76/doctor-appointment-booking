@@ -175,14 +175,10 @@ npm start
 - `GET /api/v1/users/get-all-doctors` - Get all doctors
 - `POST /api/v1/users/change-doctor-account-status` - Approve/reject doctor
 
-## Screenshots
-
-See the screenshots in the repository for UI previews.
-
 ## License
 
 ISC
 
 ## Author
 
-Salman Muazam
+Shaik Raafiya
